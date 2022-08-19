@@ -3,6 +3,8 @@
   "include": ["src"], // JS로 변환할 파일 지정
   "compilerOptions": {
     "outDir": "build", // 변환된 파일 경로
-    "target": "ES6" // 변환할 JS버전
+    "target": "ES6", // 변환할 JS버전
+    "lib": ["ES6", "DOM"], // JS가 실행되는 환경
+    "strict": true // 엄격한 모드
   }
 }
