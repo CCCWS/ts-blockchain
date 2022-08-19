@@ -1,0 +1,8 @@
+//TS옵션 설정
+{
+  "include": ["src"], // JS로 변환할 파일 지정
+  "compilerOptions": {
+    "outDir": "build", // 변환된 파일 경로
+    "target": "ES6" // 변환할 JS버전
+  }
+}
