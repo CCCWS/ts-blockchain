@@ -5,6 +5,7 @@
     "outDir": "build", // 변환된 파일 경로
     "target": "ES6", // 변환할 JS버전
     "lib": ["ES6", "DOM"], // JS가 실행되는 환경
-    "strict": true // 엄격한 모드
+    "strict": true, // 엄격한 모드
+    "allowJs": true // TS안에 JS를 허용
   }
 }
