@@ -1,8 +1,51 @@
-import { init, exit } from "./myPackage";
+import crypto from "crypto";
+//crypto 모듈에 기본 내보내기가 없다고 표시됨 > * as crypto
+//혹은 tsconfig에서 따로 설정
+//npm i -D @types/(설치한 패키지명)으로 해당 모듈의 .d.ts을 가져올 수 있음
+// https://github.com/DefinitelyTyped/DefinitelyTyped 모듈의 type을 정의한 리포지트리
 
-init({
-  url: "TEST",
-  debug: true,
-});
+interface BlockShape {
+  hash: string; // prevHash, height, data를 이용하여 계산
+  prevHash: string; // 이전 값
+  height: number; // 블록의 위치
+  data: string;
+}
 
-exit(1);
+class Block implements BlockShape {
+  public hash: string;
+  constructor(
+    public prevHash: string,
+    public height: number,
+    public data: string
+  ) {
+    this.hash = Block.calcHash(prevHash, height, data);
+    // 새로운 block가 생성되면 calcHash함수를 통하여 새로운 hash가 생성
+  }
+  static calcHash(prevHash: string, height: number, data: string) {
+    const toHash = `${prevHash}${height}${data}`;
+    return crypto.createHash("sha256").update(toHash).digest("hex");
+  }
+}
+
+class BlockChain {
+  private block: Block[];
+  constructor() {
+    this.block = [];
+  }
+  private getPrevHash() {
+    if (this.block.length === 0) return "";
+    return this.block[this.block.length - 1].hash;
+  }
+  public addBlock(data: string) {
+    const newBlock = new Block(
+      this.getPrevHash(), // prevHash
+      this.block.length + 1, // height
+      data // data
+    );
+    this.block.push(newBlock);
+  }
+
+  public getBlock() {
+    return this.block;
+  }
+}
