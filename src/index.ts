@@ -28,7 +28,7 @@ class Block implements BlockShape {
 }
 
 class BlockChain {
-  private block: Block[];
+  private readonly block: Block[];
   constructor() {
     this.block = [];
   }
@@ -46,6 +46,16 @@ class BlockChain {
   }
 
   public getBlock() {
-    return this.block;
+    // return this.block; //배열에 직접 접근하여 데이터를 추가하는 보안이슈가 발생함
+    return [...this.block]; //새로운 배열을 반환해줌
   }
 }
+
+const test = new BlockChain();
+
+test.addBlock("first");
+test.addBlock("second");
+
+test.getBlock().push(new Block("tas", 1, "tesatast"));
+
+console.log(test.getBlock());
