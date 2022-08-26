@@ -112,6 +112,9 @@ class Dict {
     if (this.words[word.name] === undefined) {
       //아직 해당 이름의 값이 없을때
       this.words[word.name] = word.discription;
+      return "test";
+    } else {
+      console.log(`${this.words[word.name]}는 이미 등록된 단어입니다.`);
     }
   }
 
@@ -140,6 +143,10 @@ class Dict {
     }
   }
 
+  showAll() {
+    Object.values(this.words).forEach((word) => console.log(word));
+  }
+
   size() {
     console.log(Object.keys(this.words).length);
   }
@@ -158,13 +165,14 @@ class Word {
 
 const food = new Word("food", "음식");
 const flower = new Word("flower", "꽃");
-
 // food.discription = "test"; readonly옵션으로 인하여 public임에도 불구하고 변경불가
 
 const dict = new Dict();
 
-dict.add(food);
-dict.add(flower);
+console.log(dict.add(food));
+console.log(dict.add(flower));
+
+dict.showAll()
 
 dict.discription("food");
 
@@ -317,8 +325,8 @@ const stringLocal = new LocalStorage<string>();
 const numberLocal = new LocalStorage<number>();
 const booleanLocal = new LocalStorage<boolean>();
 
-stringLocal.set("이름", "name");
-numberLocal.set("숫자", 1);
-booleanLocal.set("참거짓", true);
+// stringLocal.set("이름", "name");
+// numberLocal.set("숫자", 1);
+// booleanLocal.set("참거짓", true);
 
-stringLocal.get("이름");
+// stringLocal.get("이름");
