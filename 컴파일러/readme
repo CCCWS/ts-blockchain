@@ -1,0 +1,5 @@
+1. TS파일을 JS파일로 변환 : npx tsc (파일명)
+
+2. 관찰모드 : npx tsc (파일명) -w TS의 내용이 바뀔때마다 자동으로 변환
+
+3. 변환 폴더 지정 : tsconfig.json > include

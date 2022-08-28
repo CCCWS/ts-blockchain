@@ -1,13 +1,18 @@
 //TS옵션 설정
 {
-  "include": ["src"], // JS로 변환할 파일 지정
+  "include": ["src", "기본타입"], // JS로 변환할 파일 지정, npx tsc
+  "exclude": [], // 변환 제외 파일
   "compilerOptions": {
     "outDir": "build", // 변환된 파일 경로
+    "rootDir": "", // 변환을 시작할 시작폴더
+    "removeComments": true, //변환시 TS의 주석 모두 제거
     "target": "ES6", // 변환할 JS버전
     "lib": ["ES6"], // JS가 실행되는 환경, 브라우저에서 작동시 "DOM"
     "strict": true, // 엄격한 모드
     "allowJs": true, // TS안에 JS를 허용, TS와 JS를 같이 사용
     "esModuleInterop": true, // ES6 모듈의 코드를 가져올시 문제 해결, ES6 모듈 사양 준수
-    "module": "CommonJS" //브라우저라면 umd
+    "module": "CommonJS", //브라우저라면 umd
+    "sourceMap": true, // 변환시 map파일을 추가생성, 브라우저 개발자 도구에서 ts파일 확인가능, 디버깅 용이
+    "noEmitOnError": true, // TS파일에 에러가 발생중이라면 JS파일로 변환, 생성하지 않음
   }
 }
