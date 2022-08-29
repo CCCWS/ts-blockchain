@@ -85,10 +85,10 @@ class Test extends User {
 //   }
 // }
 
-const test = new Test("firstName", "lastName", "nickName");
+const test1 = new Test("firstName", "lastName", "nickName");
 const test2 = new Test("D", "E", null);
 
-test.getNickName();
+test1.getNickName();
 
 type Words = {
   [key: string]: string;
@@ -172,7 +172,7 @@ const dict = new Dict();
 console.log(dict.add(food));
 console.log(dict.add(flower));
 
-dict.showAll()
+dict.showAll();
 
 dict.discription("food");
 
@@ -330,3 +330,5 @@ const booleanLocal = new LocalStorage<boolean>();
 // booleanLocal.set("참거짓", true);
 
 // stringLocal.get("이름");
+
+export {};

@@ -1,6 +1,6 @@
 //TS옵션 설정
 {
-  "include": ["src", "기본타입"], // JS로 변환할 파일 지정, npx tsc
+  "include": ["src", "기본타입", "클래스"], // JS로 변환할 파일 지정, npx tsc
   "exclude": [], // 변환 제외 파일
   "compilerOptions": {
     "outDir": "build", // 변환된 파일 경로
@@ -14,5 +14,6 @@
     "module": "CommonJS", //브라우저라면 umd
     "sourceMap": true, // 변환시 map파일을 추가생성, 브라우저 개발자 도구에서 ts파일 확인가능, 디버깅 용이
     "noEmitOnError": true, // TS파일에 에러가 발생중이라면 JS파일로 변환, 생성하지 않음
+    "types": ["node"]
   }
 }
