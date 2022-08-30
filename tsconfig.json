@@ -7,7 +7,7 @@
     "rootDir": "", // 변환을 시작할 시작폴더
     "removeComments": true, //변환시 TS의 주석 모두 제거
     "target": "ES6", // 변환할 JS버전
-    "lib": ["ES6"], // JS가 실행되는 환경, 브라우저에서 작동시 "DOM"
+    "lib": ["ES6", "DOM"], // JS가 실행되는 환경, 브라우저에서 작동시 "DOM"
     "strict": true, // 엄격한 모드
     "allowJs": true, // TS안에 JS를 허용, TS와 JS를 같이 사용
     "esModuleInterop": true, // ES6 모듈의 코드를 가져올시 문제 해결, ES6 모듈 사양 준수
