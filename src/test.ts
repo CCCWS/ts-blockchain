@@ -4,7 +4,7 @@ type Config = {
 };
 
 type Push = {
-  (config: { path: string; state: number }): void;
+  (config: Config): void;
   (config: string): void;
 };
 

@@ -1,9 +1,9 @@
-interface Storage<G> {
+interface StorageInterface<G> {
   [key: string]: G;
 }
 
 abstract class AbstractLocalStorage<G> {
-  constructor(protected storage: Storage<G> = {}) {}
+  constructor(protected storage: StorageInterface<G> = {}) {}
 
   abstract setItem(key: string, value: G): void;
   abstract getItem(key: string): G | void;
@@ -11,7 +11,7 @@ abstract class AbstractLocalStorage<G> {
   abstract clear(): void;
 }
 
-class LocalStorage<G> extends AbstractLocalStorage<G> {
+class UserLocalStorage<G> extends AbstractLocalStorage<G> {
   setItem(key: string, value: G) {
     if (this.storage[key]) {
       console.log("단어 중복");
@@ -44,16 +44,12 @@ class LocalStorage<G> extends AbstractLocalStorage<G> {
   }
 }
 
-const localStorage = new LocalStorage();
+const customLocalStorage = new UserLocalStorage();
 
-localStorage.setItem("string", "string");
-localStorage.setItem("number", 1);
-localStorage.setItem("boolean", true);
+customLocalStorage.setItem("string", "string");
+customLocalStorage.setItem("number", 1);
+customLocalStorage.setItem("boolean", true);
 
-console.log(localStorage.getItem("string"));
-localStorage.clearItem("string");
-localStorage.clear();
-
-
-
-
+console.log(customLocalStorage.getItem("string"));
+customLocalStorage.clearItem("string");
+customLocalStorage.clear();
