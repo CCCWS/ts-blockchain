@@ -1,5 +1,5 @@
 interface Bird {
-  type: "bird";
+  type: "bird"; //문자열 리터럴
   flyingSpeed: number;
 }
 
@@ -17,7 +17,7 @@ const animal = (animal: Animal) => {
   //타입에 해당 속성을 설명하는 속성을 추가함
   //switch문으로 어떤 타입의 속성을 사용할지 파악함
   switch (animal.type) {
-    case "bird":
+    case "bird": 
       speed = animal.flyingSpeed;
       break;
 
