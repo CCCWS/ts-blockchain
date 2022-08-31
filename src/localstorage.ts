@@ -2,7 +2,7 @@ interface StorageInterface<G> {
   [key: string]: G;
 }
 
-abstract class AbstractLocalStorage<G> {
+abstract class LocalStorageAPI<G> {
   constructor(protected storage: StorageInterface<G> = {}) {}
 
   abstract setItem(key: string, value: G): void;
@@ -11,7 +11,7 @@ abstract class AbstractLocalStorage<G> {
   abstract clear(): void;
 }
 
-class UserLocalStorage<G> extends AbstractLocalStorage<G> {
+class UserLocalStorage<G> extends LocalStorageAPI<G> {
   setItem(key: string, value: G) {
     if (this.storage[key]) {
       console.log("단어 중복");
@@ -25,7 +25,7 @@ class UserLocalStorage<G> extends AbstractLocalStorage<G> {
     if (this.storage[key]) {
       return this.storage[key];
     } else {
-      console.log("등록 단어 없음");
+      return console.log("등록 단어 없음");
     }
   }
 

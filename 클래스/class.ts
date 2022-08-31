@@ -88,12 +88,29 @@ const dog = new Dog("dogName", 10, "wall", ["dog"]);
 //클래스가 단 하나의 인스턴스만 가지도록함
 class Singleton {
   private static instance: Singleton;
-  private constructor() {}
+  //private이므로 클래스 내부에서만 호출가능
+
+  private constructor(
+    private string: string,
+    private number: number,
+    private boolean: boolean
+  ) {}
+  //생성자에 private를 붙여서 외부에서 호출 불가
 
   public static getInstance() {
-    return this.instance || (this.instance = new this());
+    return this.instance || (this.instance = new Singleton("A", 1, true));
+    //정적 메소드, 클래스 자체에서 호출 가능
+    //클래스를 인스턴스화할 필요가 없음
+    //인스턴스가 있는지 확인하고 없다면 새로운 인스턴스 생성
   }
+
+  test = () => {
+    console.log("test");
+  };
 }
+
+const singleton = Singleton.getInstance();
+console.log(singleton);
 
 class customMath {
   constructor() {}
@@ -113,6 +130,5 @@ class customMath {
   };
 }
 
-console.log(customMath.max(39, 27, 41, 20));
-
-console.log(customMath.add(1, 2));
+// console.log(customMath.max(39, 27, 41, 20));
+// console.log(customMath.add(1, 2));

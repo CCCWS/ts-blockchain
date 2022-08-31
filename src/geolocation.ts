@@ -1,4 +1,4 @@
-interface GeolocationFunc {
+interface GeolocationAPI {
   getCurrentPosition(
     success: GeolocationPosition,
     error?: GeolocationPositionError,
@@ -11,7 +11,7 @@ interface GeolocationFunc {
     option?: Options
   ): number;
 
-  clearWatch(id): void;
+  clearWatch(id: number): void;
 }
 
 interface GeolocationPosition {
@@ -24,13 +24,13 @@ interface PositionInterface {
 }
 
 interface Coords {
-  readonly latitude: number; //위도
-  readonly longitude: number; //경도
-  readonly altitude: number | null; //위치의 고도를 미터 단위로 표시
-  readonly accuracy: number; //미터로 표시된 및 속성의 정확도
-  readonly altitudeAccuracy: number | null; //미터로 표현된 정확도
-  readonly heading: number | null; //장치가 향하고 있는 방향을
-  readonly speed: number | null; //초당 미터 단위로 장치의 속도
+  readonly latitude: number;
+  readonly longitude: number;
+  readonly altitude: number | null;
+  readonly accuracy: number;
+  readonly altitudeAccuracy: number | null;
+  readonly heading: number | null;
+  readonly speed: number | null;
 }
 
 interface Options {
@@ -44,29 +44,34 @@ interface GeolocationPositionError {
 }
 
 interface PositionErrorInterface {
-  readonly code: ErrorCode;
+  readonly code: number;
   readonly message: string;
+  readonly PERMISSION_DENIED: number;
+  readonly POSITION_UNAVAILABLE: number;
+  readonly TIMEOUT: number;
 }
 
-type ErrorCode = {
-  PERMISSION_DENIED?: 1;
-  POSITION_UNAVAILABLE?: 2;
-  TIMEOUT?: 3;
-};
-
-class UserGeolocation implements GeolocationFunc {
+class UserGeolocation implements GeolocationAPI {
   getCurrentPosition(
     success: GeolocationPosition,
     error?: GeolocationPositionError,
     option?: Options
-  ) {}
+  ) {
+    console.log(success);
+    if (error) console.log(error);
+    if (option) console.log(option);
+  }
 
   watchPosition(
     success: GeolocationPosition,
     error?: GeolocationPositionError,
     option?: Options
   ) {
-    return 1;
+    console.log(success);
+    if (error) console.log("error");
+    if (option) console.log(option);
+
+    return 0;
   }
 
   clearWatch(id: number) {
@@ -74,33 +79,18 @@ class UserGeolocation implements GeolocationFunc {
   }
 }
 
-const user = new UserGeolocation();
+const userGeolocation = new UserGeolocation();
 
-interface Test {
-  test: Func;
-}
-
-interface Func {
-  (item: number): void;
-}
-
-class ABC implements Test {
-  constructor() {}
-  test() {
-    console.log("test");
-  }
-}
-
-const abc = new ABC();
-
-abc.test();
-
-type Tttest = {
-  a?: 1;
-  b?: 2;
-  c?: 3;
+const success = (coords: Coords, timestamp: number): void => {
+  console.log("test");
+};
+const error = () => {};
+const options = {
+  enableHighAccuracy: true,
+  timeout: 5000,
+  maximumAge: 0,
 };
 
-let tttest: Tttest;
-
-tttest = { b: 2, c: 3 };
+userGeolocation.getCurrentPosition(success);
+// userGeolocation.getCurrentPosition(success, error);
+// userGeolocation.getCurrentPosition(success, error, options);
