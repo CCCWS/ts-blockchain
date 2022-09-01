@@ -91,6 +91,6 @@ const options = {
   maximumAge: 0,
 };
 
-userGeolocation.getCurrentPosition(success);
+// userGeolocation.getCurrentPosition(success);
 // userGeolocation.getCurrentPosition(success, error);
 // userGeolocation.getCurrentPosition(success, error, options);

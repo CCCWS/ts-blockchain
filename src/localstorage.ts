@@ -46,10 +46,12 @@ class UserLocalStorage<G> extends LocalStorageAPI<G> {
 
 const customLocalStorage = new UserLocalStorage();
 
-customLocalStorage.setItem("string", "string");
-customLocalStorage.setItem("number", 1);
-customLocalStorage.setItem("boolean", true);
+// customLocalStorage.setItem("string", "string");
+// customLocalStorage.setItem("number", 1);
+// customLocalStorage.setItem("boolean", true);
 
-console.log(customLocalStorage.getItem("string"));
-customLocalStorage.clearItem("string");
-customLocalStorage.clear();
+// console.log(customLocalStorage.getItem("string"));
+// customLocalStorage.clearItem("string");
+// customLocalStorage.clear();
+
+console.log(customLocalStorage);
