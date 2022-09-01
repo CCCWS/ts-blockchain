@@ -7,6 +7,7 @@ type GeolocationCoords = {
   heading: number;
   speed: number;
 };
+
 type Position = {
   coords: GeolocationCoords;
 };

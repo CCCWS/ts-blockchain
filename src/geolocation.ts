@@ -52,31 +52,31 @@ interface PositionErrorInterface {
 }
 
 class UserGeolocation implements GeolocationAPI {
-  getCurrentPosition(
+  getCurrentPosition = (
     success: GeolocationPosition,
     error?: GeolocationPositionError,
     option?: Options
-  ) {
+  ) => {
     console.log(success);
     if (error) console.log(error);
     if (option) console.log(option);
-  }
+  };
 
-  watchPosition(
+  watchPosition = (
     success: GeolocationPosition,
     error?: GeolocationPositionError,
     option?: Options
-  ) {
+  ) => {
     console.log(success);
     if (error) console.log("error");
     if (option) console.log(option);
 
     return 0;
-  }
+  };
 
-  clearWatch(id: number) {
+  clearWatch = (id: number) => {
     console.log(`${id} : 등록 해제`);
-  }
+  };
 }
 
 const userGeolocation = new UserGeolocation();
