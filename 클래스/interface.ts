@@ -60,3 +60,5 @@ interface FuncInterface {
 const addFunc: FuncInterface = (a, b) => {
   return a + b;
 };
+
+export {};
