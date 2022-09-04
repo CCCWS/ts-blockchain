@@ -50,54 +50,82 @@ export function split(string, separator, limit) {
   return string.split(separator, limit);
 }
 
-// export function hasPath(object, path) {
-//   path = castPath(path, object);
+export function hasPath(object, path) {
+  path = castPath(path, object);
 
-//   let index = -1;
-//   let { length } = path;
-//   let result = false;
-//   let key;
+  let index = -1;
+  let { length } = path;
+  let result = false;
+  let key;
 
-//   while (++index < length) {
-//     key = toKey(path[index]);
-//     if (!(result = object != null && hasOwnProperty.call(object, key))) {
-//       break;
-//     }
-//     object = object[key];
-//   }
-//   if (result || ++index != length) {
-//     return result;
-//   }
-//   length = object == null ? 0 : object.length;
-//   return (
-//     !!length &&
-//     isLength(length) &&
-//     isIndex(key, length) &&
-//     (Array.isArray(object) || isArguments(object))
-//   );
-// }
+  while (++index < length) {
+    key = toKey(path[index]);
+    if (!(result = object != null && hasOwnProperty.call(object, key))) {
+      break;
+    }
+    object = object[key];
+  }
+  if (result || ++index != length) {
+    return result;
+  }
+  length = object == null ? 0 : object.length;
+  return (
+    !!length &&
+    isLength(length) &&
+    isIndex(key, length) &&
+    (Array.isArray(object) || isArguments(object))
+  );
+}
 
-// export function filter(array, predicate) {
-//   let index = -1;
-//   let resIndex = 0;
-//   const length = array == null ? 0 : array.length;
-//   const result = [];
+export function flter(array, predicate) {
+  let index = -1;
+  let resIndex = 0;
+  const length = array == null ? 0 : array.length;
+  const result = [];
 
-//   while (++index < length) {
-//     const value = array[index];
-//     if (predicate(value, index, array)) {
-//       result[resIndex++] = value;
-//     }
-//   }
-//   return result;
-// }
+  while (++index < length) {
+    const value = array[index];
+    if (predicate(value, index, array)) {
+      result[resIndex++] = value;
+    }
+  }
+  return result;
+}
 
-import { filter } from "lodash";
-
-const test = (a) => {
-  return a + a;
+const objCheck = (a) => {
+  if (typeof a === "object") {
+    return true;
+  } else {
+    return false;
+  }
 };
 
-const users = [{ name: "name" }, { age: "age" }];
+const arr = [1, { test: "TEST" }];
+// console.log(flter(arr, objCheck));
 
-console.log(filter(users, ({ name }) => users.values(name)));
+export function every(array, predicate) {
+  let index = -1;
+  const length = array == null ? 0 : array.length;
+
+  while (++index < length) {
+    if (!predicate(array[index], index, array)) {
+      return "A";
+    }
+  }
+  return true;
+}
+
+export function map(array, iteratee) {
+  let index = -1;
+  const length = array == null ? 0 : array.length;
+  const result = new Array(length);
+
+  while (++index < length) {
+    result[index] = iteratee(array[index]);
+  }
+  return result;
+}
+
+// import { map } from "lodash";
+
+console.log(map([1, 2, 3, 4], (a) => a * 2));

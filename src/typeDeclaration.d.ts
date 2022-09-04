@@ -10,4 +10,6 @@ declare module "typeDeclaration" {
   ): string[];
   function hasPath<G>(object: Object, path: G[] | string): boolean;
   function filter<G>(array: G[], predicate: Function): G[];
+  function every<G>(array: G[], predicate: Function): boolean;
+  function map<G>(array: G[], iteratee: Function): G[];
 }
