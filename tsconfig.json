@@ -11,11 +11,12 @@
     "strict": true, // 엄격한 모드
     "allowJs": true, // TS안에 JS를 허용, TS와 JS를 같이 사용
     "esModuleInterop": true, // ES6 모듈의 코드를 가져올시 문제 해결, ES6 모듈 사양 준수
-    "module": "CommonJS", //브라우저라면 umd
+    "module": "ES2015", //브라우저라면 umd
     "sourceMap": true, // 변환시 map파일을 추가생성, 브라우저 개발자 도구에서 ts파일 확인가능, 디버깅 용이
     "noEmitOnError": true, // TS파일에 에러가 발생중이라면 JS파일로 변환, 생성하지 않음
     "types": ["node"],
     "experimentalDecorators": true, //데코레이터 사용,
+    "moduleResolution": "node",
     "noImplicitReturns": true
   }
 }
