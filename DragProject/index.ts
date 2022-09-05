@@ -59,23 +59,8 @@ class ProjectState {
 
   addListener = (listenerFunc: ListenerFunc) => {
     //activ와 finished 두개의 클래스가 생성되어 두번 호출
+    //ProjectList의 assigne함수가 들어감 180
     this.listenerFunc.push(listenerFunc);
-    // private assigne = (projects: any[]) => {
-    //     this.assigneProjects = projects;
-    //     this.renderProjects();
-    //   };
-
-    //   private renderProjects = () => {
-    //     const list = document.getElementById(
-    //       `${this.state}-projects`
-    //     )! as HTMLUListElement;
-
-    //     for (const item of this.assigneProjects) {
-    //       const listItem = document.createElement("li");
-    //       listItem.textContent = item.title;
-    //       list?.appendChild(listItem);
-    //     }
-    //   };
   };
 
   //입력받은 값들을 객체로 묶어서 배열에 저장
@@ -87,12 +72,6 @@ class ProjectState {
       people,
       ProjectStatus.Active
     );
-    // {
-    //   id: new Date().getTime(),
-    //   title: title,
-    //   description: description,
-    //   people: people,
-    // };
     this.projects.push(newProject);
 
     //ProjectList에서 실제로 DOM에 랜더링을 해줌
@@ -110,55 +89,71 @@ class ProjectState {
 
 const projectState = ProjectState.getInstance();
 
-//list class
-//active, finished 카테고리 생성
-class ProjectList {
+//ProjectList와 ProjectInput의 공통기능 관리
+abstract class Component<T extends HTMLElement, U extends HTMLElement> {
   templateElement: HTMLTemplateElement;
-  hostDivElement: HTMLDivElement;
-  sectionElement: HTMLElement;
-  itemArr: ProjectType[]; //DOM에 랜더링할 데이터 [title, desc, people]로 구성된 튜플
+  hostElement: T;
+  element: U;
 
-  constructor(private status: "active" | "finished") {
+  constructor(
+    templateId: string,
+    hostElementId: string,
+    insert: boolean, // afterbegin or beforeend
+    newElementId?: string
+  ) {
     this.templateElement = document.getElementById(
-      "project-list"
+      templateId
     )! as HTMLTemplateElement;
-    this.hostDivElement = document.getElementById("app")! as HTMLDivElement;
-    this.itemArr = [];
+    this.hostElement = document.getElementById(hostElementId)! as T;
 
+    //document.importNode
+    //현재 문서가 아닌 외부 문서의 노드를 복사하여 현재 문서에 넣음
+    //true시 자식요소를 포함하여 가져옴
     const importNode = document.importNode(this.templateElement.content, true);
 
-    this.sectionElement = importNode.firstElementChild as HTMLElement;
-    this.sectionElement.id = `${status}-projects`;
+    //div에 template를 추가시켜서 화면에 출력시켜줌
+    this.element = importNode.firstElementChild as U;
+    if (newElementId) {
+      this.element.id = newElementId;
+    }
 
-    projectState.addListener(this.assigne);
+    this.attacth(insert);
+  }
 
-    this.attacth();
+  //template를 dom에 랜더링
+  //insertAdjacentElement
+  //innerHTML보다 빠르며 요소를 재분석하지 않고 내부의 기존 요소를 방해하지 않음
+  //beforeend > element 안에 가장 마지막 child
+  //afterbegin > element 안에 가장 첫번째 child
+  private attacth = (insert: boolean) => {
+    this.hostElement.insertAdjacentElement(
+      insert ? "afterbegin" : "beforeend",
+      this.element
+    );
+  };
+
+  abstract configure(): void;
+  abstract renderContent(): void;
+}
+
+//list class
+//active, finished 카테고리 생성
+class ProjectList extends Component<HTMLDivElement, HTMLElement> {
+  //   itemArr: ProjectType[]; //DOM에 랜더링할 데이터 [title, desc, people]로 구성된 튜플
+  constructor(private status: "active" | "finished") {
+    super("project-list", "app", false, `${status}-projects`);
+    // this.itemArr = [];
+    this.configure();
     this.renderContent();
   }
 
   //method//
-  private assigne = (projects: ProjectType[]) => {
-    // projects > ProjectState에서 보내준 [title, desc, people]로 구성된 튜플
-    const projectFillter = projects.filter((projects) => {
-      //active, finished 상태 필터링
-      if (this.status === "active") {
-        return projects.status === ProjectStatus.Active;
-      }
-      return projects.status === ProjectStatus.Finished;
-    });
-
-    console.log(projectFillter);
-
-    this.itemArr = projectFillter;
-    this.renderProjects();
-  };
-
-  private renderProjects = () => {
+  private renderProjects = (itemArr: ProjectType[]) => {
     const list = document.getElementById(
       `${this.status}-projects`
     )! as HTMLUListElement;
 
-    for (const item of this.itemArr) {
+    for (const item of itemArr) {
       const listItem = document.createElement("li");
 
       listItem.textContent = `
@@ -171,16 +166,32 @@ class ProjectList {
     }
   };
 
-  private renderContent = () => {
+  renderContent = () => {
     //template의 요소의 값을 추가
-    this.sectionElement.querySelector("ul")!.id = `${this.status}-projects`; //ul의 id입력
-    this.sectionElement.querySelector("h2")!.textContent =
+    this.element.querySelector("ul")!.id = `${this.status}-projects`; //ul의 id입력
+    this.element.querySelector("h2")!.textContent =
       this.status.toLocaleUpperCase(); //클래스 생성시 입력된 값
   };
 
-  private attacth = () => {
-    //template를 dom에 랜더링
-    this.hostDivElement.insertAdjacentElement("beforeend", this.sectionElement);
+  configure = () => {
+    projectState.addListener(this.assigne);
+  };
+
+  private assigne = (projects: ProjectType[]) => {
+    // projects > ProjectState에서 보내준 [title, desc, people]로 구성된 튜플
+    const projectFillter = projects.filter((projects) => {
+      //active, finished 상태 필터링
+      if (this.status === "active") {
+        //active 클래스일 경우
+        //상태가 active인 데이터만 남김
+        return projects.status === ProjectStatus.Active;
+      }
+      //finished 클래스일 경우
+      //상태가 finished인 데이터만 남김
+      return projects.status === ProjectStatus.Finished;
+    });
+    // this.itemArr = projectFillter;
+    this.renderProjects(projectFillter);
   };
 }
 
@@ -189,7 +200,7 @@ const test2 = new ProjectList("finished");
 
 //input class
 //입력 카테고리 생성
-class ProjectInput {
+class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
   templateElement: HTMLTemplateElement;
   hostDivElement: HTMLDivElement;
   formElement: HTMLFormElement;
@@ -213,8 +224,8 @@ class ProjectInput {
 
     //div에 template를 추가시켜서 화면에 출력시켜줌
     this.formElement = importNode.firstElementChild as HTMLFormElement;
-    this.attacth();
     this.formElement.id = "user-input"; //form에 id추가
+    this.attacth();
 
     //해당 ID가 inputElement인것을 보장하기위해 형변환 필요
     //form의 자식노드인 input에 접근
