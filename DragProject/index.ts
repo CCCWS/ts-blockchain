@@ -1,21 +1,33 @@
 // .bind()
 // 호출하는 함수에 객체를 bind해주지 않으면 전역 객체로부터 값을 받아오려고 하기 때문에
 // 원하는 값이아닌 다른값을 가지게됨
-// function autobind(_: any, _2: string, descriptor: PropertyDescriptor) {
-//     const originalMethod = descriptor.value;
-//     const adjDescriptor: PropertyDescriptor = {
-//       configurable: true,
-//       get() {
-//         const boundFn = originalMethod.bind(this);
-//         return boundFn;
-//       }
-//     };
-//     return adjDescriptor;
-//   }
+function autobind(_: any, _2: string, descriptor: PropertyDescriptor) {
+  const originalMethod = descriptor.value;
+  const adjDescriptor: PropertyDescriptor = {
+    configurable: true,
+    get() {
+      const boundFn = originalMethod.bind(this);
+      return boundFn;
+    },
+  };
+  return adjDescriptor;
+}
 
 //ProjectInput에서 값 입력후 버튼클릭 >
 //ProjectState에서 전달 받은 데이터를 다시 전달 >
 //ProjectList에서 랜더링
+
+// Drag interface
+interface DragAble {
+  dragStartHandler(e: DragEvent): void;
+  dragEndHandler(e: DragEvent): void;
+}
+
+interface DragTarget {
+  dragOverHandler(e: DragEvent): void; //드래그가 유효한 타겟임을 알림
+  dropHandler(e: DragEvent): void; //드롭시 발생
+  dragLeaveHandler(e: DragEvent): void; //시각적 피드백 제공
+}
 
 enum ProjectStatus {
   Active,
@@ -79,16 +91,24 @@ class ProjectState extends State<ProjectType> {
       ProjectStatus.Active
     );
     this.projects.push(newProject);
+    this.updateListener();
+  };
 
+  moveProject = (projectId: string, newStatus: ProjectStatus) => {
+    const project = this.projects.find((item) => item.id === projectId);
+    if (project && project.status !== newStatus) {
+      project.status = newStatus;
+      this.updateListener();
+    }
+  };
+
+  private updateListener = () => {
     //ProjectList에서 실제로 DOM에 랜더링을 해줌
-    //activ와 finished 클래스에 하나씩 랜더링됨
     for (const listenerFunc of this.listenerFunc) {
       //for of문 > 받은 배열의 값을 순환, 배열에만 사용가능
       //for in문 > 객체를 순환, 배열을 받을시 배열의 index출력
-      listenerFunc(
-        //ProjectList클래스의 assigne함수
-        this.projects.slice(this.projects.length - 1, this.projects.length)
-      );
+      //ProjectList클래스의 assigne함수
+      listenerFunc(this.projects.slice());
     }
   };
 }
@@ -144,7 +164,10 @@ abstract class Component<T extends HTMLElement, U extends HTMLElement> {
 
 //ProjectItem Class
 //입력값을 리스트에 추가하여 랜더링할 클래스
-class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> {
+class ProjectItem
+  extends Component<HTMLUListElement, HTMLLIElement>
+  implements DragAble
+{
   private project: ProjectType;
 
   constructor(hostId: string, project: ProjectType) {
@@ -156,7 +179,25 @@ class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> {
     this.renderContent();
   }
 
-  configure = () => {};
+  dragStartHandler = (e: DragEvent) => {
+    //보이지 않는곳에 드래그중 데이터를 임시로 저장
+    //드롭이 발생하면 이벤트 발생
+    e.dataTransfer!.setData("text/plain", this.project.id);
+    e.dataTransfer!.effectAllowed = "move";
+    //드롭시 원래 장소에서 제거하고 새로운 장소에 추가함
+  };
+  dragEndHandler = (e: DragEvent) => {
+    console.log("Drop");
+  };
+
+  //생성된 리스트에 드래그 이벤트 추가, li태그에 draggable 속성 추가
+  configure = () => {
+    this.element.addEventListener(
+      "dragstart",
+      this.dragStartHandler.bind(this)
+    );
+    this.element.addEventListener("dragend", this.dragEndHandler.bind(this));
+  };
 
   renderContent = () => {
     //랜더링할 목록
@@ -170,7 +211,10 @@ class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> {
 
 //ProjectList Class
 //active, finished 카테고리 생성
-class ProjectList extends Component<HTMLDivElement, HTMLElement> {
+class ProjectList
+  extends Component<HTMLDivElement, HTMLElement>
+  implements DragTarget
+{
   itemArr: ProjectType[];
   //DOM에 랜더링할 데이터
 
@@ -181,33 +225,38 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement> {
     this.configure();
     this.renderContent();
   }
-
-  private renderProjects = () => {
-    const list = document.getElementById(
-      `${this.status}-project-list`
-    )! as HTMLUListElement;
-
-    for (const item of this.itemArr) {
-      new ProjectItem(this.element.querySelector("ul")!.id, item);
-      //   const listItem = document.createElement("li");
-      //   listItem.textContent = `
-      //     TITLE : ${item.title} /
-      //     DESC : ${item.description} /
-      //     PEOPLE : ${item.people}`;
-      //   list.appendChild(listItem);
-      //   item의 값이 들어있는 li를 this.state-projects > ul의 자식노드로 추가
+  //드롭 가능한 위치에 닿았을때 발생
+  dragOverHandler(e: DragEvent) {
+    if (e.dataTransfer && e.dataTransfer.types[0] === "text/plain") {
+      //이벤트가 발생 가능한지 체크, text/plain만 허용, 다른 포멧은 불가
+      e.preventDefault();
+      const list = this.element.querySelector("ul")!;
+      list.classList.add("droppable");
     }
-  };
+  }
+  //드래그 아웃 시 이벤트 발생
+  dragLeaveHandler(e: DragEvent) {
+    const list = this.element.querySelector("ul")!;
+    list.classList.remove("droppable");
+  }
 
-  renderContent = () => {
-    //template의 요소의 값을 추가
-    const listId = `${this.status}-projects-list`;
-    this.element.querySelector("ul")!.id = listId; //ul의 id입력
-    this.element.querySelector("h2")!.textContent =
-      this.status.toLocaleUpperCase(); //클래스 생성시 입력된 값
-  };
+  //드롭시 이벤트 발생
+  dropHandler(e: DragEvent) {
+    //드래그 시작시 데이터로 줬던 드래그한 list의 id
+    const listId = e.dataTransfer!.getData("text/plain");
+    const status =
+      this.status === "active" ? ProjectStatus.Active : ProjectStatus.Finished;
+    //랜더링된 프로젝트 리스트의 상태를 넘겨줌
+    projectState.moveProject(listId, status);
+  }
 
   configure = () => {
+    this.element.addEventListener("dragover", this.dragOverHandler.bind(this));
+    this.element.addEventListener("drop", this.dropHandler.bind(this));
+    this.element.addEventListener(
+      "dragleave",
+      this.dragLeaveHandler.bind(this)
+    );
     projectState.addListener(this.assigne);
   };
 
@@ -226,6 +275,24 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement> {
     });
     this.itemArr = projectFillter;
     this.renderProjects();
+  };
+
+  renderContent = () => {
+    //template의 요소의 값을 추가
+    const listId = `${this.status}-projects-list`;
+    this.element.querySelector("ul")!.id = listId; //ul의 id입력
+    this.element.querySelector("h2")!.textContent =
+      this.status.toLocaleUpperCase(); //클래스 생성시 입력된 값
+  };
+
+  private renderProjects = () => {
+    const list = document.getElementById(
+      `${this.status}-projects-list`
+    )! as HTMLUListElement;
+    list.innerHTML = ""; //drop로 이동시 기존위치의 리스트는 비워짐
+    for (const item of this.itemArr) {
+      new ProjectItem(this.element.querySelector("ul")!.id, item);
+    }
   };
 }
 
@@ -287,13 +354,13 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
       const [title, desc, people] = userInput;
       projectState.addProject(title, desc, people);
     }
-    // this.clearInput();
+    this.clearInput();
   };
 
   renderContent = () => {};
 
   configure = () => {
-    this.element.addEventListener("submit", this.submitHendler);
+    this.element.addEventListener("submit", this.submitHendler.bind(this));
   };
 }
 

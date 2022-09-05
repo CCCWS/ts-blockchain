@@ -1,17 +1,3 @@
-// .bind()
-// 호출하는 함수에 객체를 bind해주지 않으면 전역 객체로부터 값을 받아오려고 하기 때문에
-// 원하는 값이아닌 다른값을 가지게됨
-// function autobind(_: any, _2: string, descriptor: PropertyDescriptor) {
-//     const originalMethod = descriptor.value;
-//     const adjDescriptor: PropertyDescriptor = {
-//       configurable: true,
-//       get() {
-//         const boundFn = originalMethod.bind(this);
-//         return boundFn;
-//       }
-//     };
-//     return adjDescriptor;
-//   }
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -27,9 +13,20 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-//ProjectInput에서 값 입력후 버튼클릭 >
-//ProjectState에서 전달 받은 데이터를 다시 전달 >
-//ProjectList에서 랜더링
+// .bind()
+// 호출하는 함수에 객체를 bind해주지 않으면 전역 객체로부터 값을 받아오려고 하기 때문에
+// 원하는 값이아닌 다른값을 가지게됨
+function autobind(_, _2, descriptor) {
+    var originalMethod = descriptor.value;
+    var adjDescriptor = {
+        configurable: true,
+        get: function () {
+            var boundFn = originalMethod.bind(this);
+            return boundFn;
+        }
+    };
+    return adjDescriptor;
+}
 var ProjectStatus;
 (function (ProjectStatus) {
     ProjectStatus[ProjectStatus["Active"] = 0] = "Active";
@@ -71,15 +68,23 @@ var ProjectState = /** @class */ (function (_super) {
         _this.addProject = function (title, description, people) {
             var newProject = new ProjectType(String(new Date().getTime()), title, description, people, ProjectStatus.Active);
             _this.projects.push(newProject);
+            _this.updateListener();
+        };
+        _this.moveProject = function (projectId, newStatus) {
+            var project = _this.projects.find(function (item) { return item.id === projectId; });
+            if (project && project.status !== newStatus) {
+                project.status = newStatus;
+                _this.updateListener();
+            }
+        };
+        _this.updateListener = function () {
             //ProjectList에서 실제로 DOM에 랜더링을 해줌
-            //activ와 finished 클래스에 하나씩 랜더링됨
             for (var _i = 0, _b = _this.listenerFunc; _i < _b.length; _i++) {
                 var listenerFunc = _b[_i];
                 //for of문 > 받은 배열의 값을 순환, 배열에만 사용가능
                 //for in문 > 객체를 순환, 배열을 받을시 배열의 index출력
-                listenerFunc(
                 //ProjectList클래스의 assigne함수
-                _this.projects.slice(_this.projects.length - 1, _this.projects.length));
+                listenerFunc(_this.projects.slice());
             }
         };
         return _this;
@@ -140,7 +145,21 @@ var ProjectItem = /** @class */ (function (_super) {
         var _this = 
         //hostId > active-projects or finished-project
         _super.call(this, "single-project", hostId, true, project.id) || this;
-        _this.configure = function () { };
+        _this.dragStartHandler = function (e) {
+            //보이지 않는곳에 드래그중 데이터를 임시로 저장
+            //드롭이 발생하면 이벤트 발생
+            e.dataTransfer.setData("text/plain", _this.project.id);
+            e.dataTransfer.effectAllowed = "move";
+            //드롭시 원래 장소에서 제거하고 새로운 장소에 추가함
+        };
+        _this.dragEndHandler = function (e) {
+            console.log("Drop");
+        };
+        //생성된 리스트에 드래그 이벤트 추가, li태그에 draggable 속성 추가
+        _this.configure = function () {
+            _this.element.addEventListener("dragstart", _this.dragStartHandler.bind(_this));
+            _this.element.addEventListener("dragend", _this.dragEndHandler.bind(_this));
+        };
         _this.renderContent = function () {
             //랜더링할 목록
             //element > 부모 노드의 id > active-projects or finished-project
@@ -164,28 +183,10 @@ var ProjectList = /** @class */ (function (_super) {
     function ProjectList(status) {
         var _this = _super.call(this, "project-list", "app", false, "".concat(status, "-projects")) || this;
         _this.status = status;
-        _this.renderProjects = function () {
-            var list = document.getElementById("".concat(_this.status, "-project-list"));
-            for (var _i = 0, _b = _this.itemArr; _i < _b.length; _i++) {
-                var item = _b[_i];
-                new ProjectItem(_this.element.querySelector("ul").id, item);
-                //   const listItem = document.createElement("li");
-                //   listItem.textContent = `
-                //     TITLE : ${item.title} /
-                //     DESC : ${item.description} /
-                //     PEOPLE : ${item.people}`;
-                //   list.appendChild(listItem);
-                //   item의 값이 들어있는 li를 this.state-projects > ul의 자식노드로 추가
-            }
-        };
-        _this.renderContent = function () {
-            //template의 요소의 값을 추가
-            var listId = "".concat(_this.status, "-projects-list");
-            _this.element.querySelector("ul").id = listId; //ul의 id입력
-            _this.element.querySelector("h2").textContent =
-                _this.status.toLocaleUpperCase(); //클래스 생성시 입력된 값
-        };
         _this.configure = function () {
+            _this.element.addEventListener("dragover", _this.dragOverHandler.bind(_this));
+            _this.element.addEventListener("drop", _this.dropHandler.bind(_this));
+            _this.element.addEventListener("dragleave", _this.dragLeaveHandler.bind(_this));
             projectState.addListener(_this.assigne);
         };
         _this.assigne = function (projects) {
@@ -204,11 +205,48 @@ var ProjectList = /** @class */ (function (_super) {
             _this.itemArr = projectFillter;
             _this.renderProjects();
         };
+        _this.renderContent = function () {
+            //template의 요소의 값을 추가
+            var listId = "".concat(_this.status, "-projects-list");
+            _this.element.querySelector("ul").id = listId; //ul의 id입력
+            _this.element.querySelector("h2").textContent =
+                _this.status.toLocaleUpperCase(); //클래스 생성시 입력된 값
+        };
+        _this.renderProjects = function () {
+            var list = document.getElementById("".concat(_this.status, "-projects-list"));
+            list.innerHTML = ""; //drop로 이동시 기존위치의 리스트는 비워짐
+            for (var _i = 0, _b = _this.itemArr; _i < _b.length; _i++) {
+                var item = _b[_i];
+                new ProjectItem(_this.element.querySelector("ul").id, item);
+            }
+        };
         _this.itemArr = [];
         _this.configure();
         _this.renderContent();
         return _this;
     }
+    //드롭 가능한 위치에 닿았을때 발생
+    ProjectList.prototype.dragOverHandler = function (e) {
+        if (e.dataTransfer && e.dataTransfer.types[0] === "text/plain") {
+            //이벤트가 발생 가능한지 체크, text/plain만 허용, 다른 포멧은 불가
+            e.preventDefault();
+            var list = this.element.querySelector("ul");
+            list.classList.add("droppable");
+        }
+    };
+    //드래그 아웃 시 이벤트 발생
+    ProjectList.prototype.dragLeaveHandler = function (e) {
+        var list = this.element.querySelector("ul");
+        list.classList.remove("droppable");
+    };
+    //드롭시 이벤트 발생
+    ProjectList.prototype.dropHandler = function (e) {
+        //드래그 시작시 데이터로 줬던 드래그한 list의 id
+        var listId = e.dataTransfer.getData("text/plain");
+        var status = this.status === "active" ? ProjectStatus.Active : ProjectStatus.Finished;
+        //랜더링된 프로젝트 리스트의 상태를 넘겨줌
+        projectState.moveProject(listId, status);
+    };
     return ProjectList;
 }(Component));
 //input class
@@ -248,11 +286,11 @@ var ProjectInput = /** @class */ (function (_super) {
                 var title = userInput[0], desc = userInput[1], people = userInput[2];
                 projectState.addProject(title, desc, people);
             }
-            // this.clearInput();
+            _this.clearInput();
         };
         _this.renderContent = function () { };
         _this.configure = function () {
-            _this.element.addEventListener("submit", _this.submitHendler);
+            _this.element.addEventListener("submit", _this.submitHendler.bind(_this));
         };
         //해당 ID가 inputElement인것을 보장하기위해 형변환 필요
         //form의 자식노드인 input에 접근
