@@ -4,7 +4,7 @@
   "exclude": [], // 변환 제외 파일
   "compilerOptions": {
     "outDir": "build", // 변환된 파일 경로
-    "outFile": "./build/bundle.js", // TS가 네임스페이스와 연결되게함
+    // "outFile": "./build/bundle.js", //모든 코드를 하나로 묶음, namespace사용시 필요
     "rootDir": "", // 변환을 시작할 시작폴더
     "removeComments": true, //변환시 TS의 주석 모두 제거
     "target": "ES6", // 변환할 JS버전
@@ -12,7 +12,7 @@
     "strict": true, // 엄격한 모드
     "allowJs": true, // TS안에 JS를 허용, TS와 JS를 같이 사용
     "esModuleInterop": true, // ES6 모듈의 코드를 가져올시 문제 해결, ES6 모듈 사양 준수
-    "module": "AMD", //브라우저라면 umd
+    "module": "ES2015", //ES2015 > ES6를 위한 코드 워드
     "sourceMap": true, // 변환시 map파일을 추가생성, 브라우저 개발자 도구에서 ts파일 확인가능, 디버깅 용이
     "noEmitOnError": true, // TS파일에 에러가 발생중이라면 JS파일로 변환, 생성하지 않음
     "types": ["node"],
