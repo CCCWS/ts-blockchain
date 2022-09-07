@@ -1,8 +1,8 @@
-import { ProjectItem } from "./item.js";
-import { projectState } from "./state.js";
-import { DragTarget } from "../model/dragDrop.js";
-import { ProjectType, ProjectStatus } from "../model/inputType.js";
-import { Component } from "./component.js";
+import { ProjectItem } from "./item";
+import { projectState } from "./state";
+import { DragTarget } from "../model/dragDrop";
+import { ProjectType, ProjectStatus } from "../model/inputType";
+import { Component } from "./component";
 
 //ProjectList Class
 //active, finished 카테고리 생성

@@ -1,6 +1,6 @@
-import { DragAble } from "../model/dragDrop.js";
-import { ProjectType } from "../model/inputType.js";
-import { Component } from "./component.js";
+import { DragAble } from "../model/dragDrop";
+import { ProjectType } from "../model/inputType";
+import { Component } from "./component";
 
 //ProjectItem Class
 //입력값을 리스트에 추가하여 랜더링할 클래스

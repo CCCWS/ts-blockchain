@@ -1,0 +1,7 @@
+ts-loader webpack에 어떻게 코드를 JS로 변환할지 전달, tsconfig의 target을 참고
+
+webpack 코드를 묶고 변환하기 위한 플러그인 제공
+
+webpack-cli 프로젝트에서 webpack 명령어를 실행하기위해 필요
+
+을 점검하고 변화 발생시 재컴파일webpack-dev-server 개발 서버 내에서 빌드, 파일의 변경사항

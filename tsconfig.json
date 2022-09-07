@@ -5,7 +5,7 @@
   "compilerOptions": {
     "outDir": "build", // 변환된 파일 경로
     // "outFile": "./build/bundle.js", //모든 코드를 하나로 묶음, namespace사용시 필요
-    "rootDir": "", // 변환을 시작할 시작폴더
+    // "rootDir": "", // 변환을 시작할 시작폴더
     "removeComments": true, //변환시 TS의 주석 모두 제거
     "target": "ES6", // 변환할 JS버전
     "lib": ["ES6", "DOM"], // JS가 실행되는 환경, 브라우저에서 작동시 "DOM"

@@ -1,5 +1,5 @@
-import { ProjectType } from "./../model/inputType.js";
-import { ProjectStatus } from "../model/inputType.js";
+import { ProjectType } from "./../model/inputType";
+import { ProjectStatus } from "../model/inputType";
 
 type ListenerFunc<T> = (item: T[]) => void;
 

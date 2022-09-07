@@ -1,5 +1,5 @@
-import { Component } from "./component.js";
-import { projectState } from "./state.js";
+import { Component } from "./component";
+import { projectState } from "./state";
 
 //input class
 //입력 카테고리 생성
