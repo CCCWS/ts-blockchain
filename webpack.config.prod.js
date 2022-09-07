@@ -1,11 +1,8 @@
 const path = require("path");
+const CleanPlugin = require("clean-webpack-plugin");
 
 module.exports = {
-  devServer: {
-    port: 3001,
-  },
-
-  mode: "development",
+  mode: "production", //production모드시 코드 경량화 및 죄척화
   entry: "./DragProject/index.ts", //시작파일
   output: {
     filename: "webpack-index.js",
@@ -14,7 +11,7 @@ module.exports = {
     publicPath: "webpack",
   },
 
-  devtool: "inline-source-map",
+  devtool: "none",
 
   module: {
     rules: [
@@ -29,4 +26,6 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".js"],
   },
+
+  plugins: [new CleanPlugin.CleanWebpackPlugin()],
 };
