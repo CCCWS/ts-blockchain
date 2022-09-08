@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon --exec ts-node src/index.ts",
     "start": "node build/index.js",
-    "build": "webpack --config webpack.config.prod.js",
+    "build": "webpack --config webpack.config.js",
     "webpack-dev": "webpack-dev-server"
   },
   "keywords": [],
@@ -24,6 +24,9 @@
     "webpack-dev-server": "^4.10.1"
   },
   "dependencies": {
+    "@types/google.maps": "^3.50.0",
+    "axios": "^0.27.2",
+    "google-maps": "^4.3.3",
     "lodash": "^4.17.21"
   }
 }
